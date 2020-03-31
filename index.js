@@ -10,6 +10,6 @@ let router = require('./router')
 router.init(app)
 
 app.listen(3012, () => {
-    console.log('Morning Records API started')
+    console.log('Morning Records API started on port 3012')
 })
 
