@@ -16,7 +16,13 @@ let records = [
         date: '31/03/2020',
         weight: 75.6,
         trained: false
-    }
+    },
+    {
+        id: 4,
+        date: '02/04/2020',
+        weight: 75.9,
+        trained: false
+    },
 ]
 
 exports.all = (req, res) => {
