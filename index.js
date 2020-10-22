@@ -1,10 +1,12 @@
-let express = require('express')
-let bodyParser = require('body-parser')
+const express = require('express')
+const bodyParser = require('body-parser')
+const cors = require('cors')
 
-let app = express()
+const app = express()
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
+app.use(cors())
 
 let router = require('./router')
 router.init(app)
