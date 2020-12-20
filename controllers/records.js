@@ -1,90 +1,72 @@
-let records = [
-    {
-        id: 1,
-        date: '29/03/2020',
-        weight: 75.2,
-        trained: false
-    },
-    {
-        id: 2,
-        date: '30/03/2020',
-        weight: 75.4,
-        trained: true
-    },
-    {
-        id: 3,
-        date: '31/03/2020',
-        weight: 75.6,
-        trained: false
-    },
-    {
-        id: 4,
-        date: '02/04/2020',
-        weight: 75.9,
-        trained: false
-    },
-]
+const { Pool  } = require('pg')
+
+const pool = new Pool({
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: process.env.DB_DATABASE,
+    password: process.env.DB_PASS,
+    port: process.env.DB_PORT
+})
 
 exports.all = (req, res) => {
-    res.send(records)
+    pool.query('SELECT * from records', (err, records) => {
+        if (err) {
+            res.sendStatus(500)
+        }
+        if (records && records.rows) {
+            res.send(records.rows)
+        }
+    })
 }
 
 exports.findById = (req, res) => {
-    let found = records.find(record => {
-        if (record.id === Number(req.params.id)) {
-            return record
+    pool.query('SELECT * from records WHERE id = $1', [req.params.id], (err, record) => {
+        if (err) {
+            res.sendStatus(500)
+        }
+        if (record && record.rows && record.rows.length === 1) {
+            res.send(record.rows[0])
+        } else {
+            res.sendStatus(404)
         }
     })
-    if (found) {
-        res.send(found)
-    } else {
-        res.sendStatus(404)
-    }
 }
 
 exports.update = (req, res) => {
-    let found = records.find(record => {
-        if (record.id === Number(req.params.id)) {
-            return record
+    pool.query('UPDATE records SET date = $2, weight = $3, trained = $4 WHERE id = $1', [req.params.id, req.body.date, req.body.weight, req.body.trained], (err, record) => {
+        if (err) {
+            res.sendStatus(500)
+        }
+        if (record.rowCount === 1) {
+            res.sendStatus(200)
+        } else {
+            res.sendStatus(404)
         }
     })
-    if (found) {
-        found.date = req.body.date ? req.body.date : found.date
-        found.weight = req.body.weight ? req.body.weight : found.weight
-        found.trained = req.body.trained ? req.body.trained : found.trained
-        res.send(found)
-    } else {
-        res.sendStatus(404)
-    }
 }
 
 exports.create = (req, res) => {
-        if (req.body.date && req.body.weight && typeof(req.body.trained) === "boolean") {
-            let record = {
-                id: Date.now(),
-                date: req.body.date,
-                weight: req.body.weight,
-                trained: req.body.trained
-            }
-            records.push(record)
-            res.send(record)
-        } else {
-            res.status(400).send({
-                message: 'Fill all required fields'
-            })
+    pool.query('INSERT INTO records(date, weight, trained) VALUES ($1, $2, $3)', [req.body.date, req.body.weight, req.body.trained], (err, record) => {
+        if (err) {
+            res.sendStatus(500)
         }
+        if (record.rowCount === 1) {
+            res.sendStatus(201)
+        } else {
+            res.sendStatus(500)
+        }
+    })
 }
 
 exports.delete = (req, res) => {
-    let found = records.find(record => {
-        if (record.id === Number(req.params.id)) {
-            return record
+    pool.query('DELETE FROM records WHERE id = $1', [req.params.id], (err, record) => {
+        if (err) {
+            res.sendStatus(500)
+        }
+        if (record.rowCount === 1) {
+            res.sendStatus(200)
+        } else {
+            res.sendStatus(404)
         }
     })
-    if (found) {
-        records = records.filter(record => record.id !== Number(req.params.id))
-        res.sendStatus(200)
-    } else {
-        res.sendStatus(404)
-    }
 }
