@@ -1,26 +1,18 @@
-const query = `CREATE TABLE public.records
+import { pool } from 'services/pool'
+
+const query = `CREATE TABLE public.users
 (
-    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
-trained boolean DEFAULT false,
-    weight numeric(10,2),
-    date date,
-    CONSTRAINT records_pkey PRIMARY KEY (id)
+    id integer NOT NULL,
+    email text COLLATE pg_catalog."default" NOT NULL,
+    password text COLLATE pg_catalog."default" NOT NULL,
+    CONSTRAINT users_pkey PRIMARY KEY (id),
+    CONSTRAINT users_email_key UNIQUE (email)
 )
 
 TABLESPACE pg_default;
 
-ALTER TABLE public.records
-OWNER to postgres;`;
-
-const { Pool  } = require('pg')
-
-const pool = new Pool({
-    user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    database: process.env.DB_DATABASE,
-    password: process.env.DB_PASS,
-    port: process.env.DB_PORT
-})
+ALTER TABLE public.users
+    OWNER to postgres;`;
 
 pool.query(query, (err, res) => {
     console.log(err, res);

@@ -1,12 +1,4 @@
-const { Pool  } = require('pg')
-
-const pool = new Pool({
-    user: process.env.DB_USER,
-    host: process.env.DB_HOST,
-    database: process.env.DB_DATABASE,
-    password: process.env.DB_PASS,
-    port: process.env.DB_PORT
-})
+const pool = require('../services/pool').pool;
 
 exports.all = (req, res) => {
     pool.query('SELECT * from records', (err, records) => {
@@ -20,16 +12,21 @@ exports.all = (req, res) => {
 }
 
 exports.findById = (req, res) => {
-    pool.query('SELECT * from records WHERE id = $1', [req.params.id], (err, record) => {
-        if (err) {
-            res.sendStatus(500)
-        }
-        if (record && record.rows && record.rows.length === 1) {
-            res.send(record.rows[0])
-        } else {
-            res.sendStatus(404)
-        }
-    })
+    const id = parseInt(req.params.id);
+    if (id) {
+        pool.query('SELECT * from records WHERE id = $1', [id], (err, record) => {
+            if (err) {
+                res.sendStatus(500)
+            }
+            if (record && record.rows && record.rows.length === 1) {
+                res.send(record.rows[0])
+            } else {
+                res.sendStatus(404)
+            }
+        })
+    } else {
+        res.sendStatus(404)
+    }
 }
 
 exports.update = (req, res) => {
@@ -59,14 +56,19 @@ exports.create = (req, res) => {
 }
 
 exports.delete = (req, res) => {
-    pool.query('DELETE FROM records WHERE id = $1', [req.params.id], (err, record) => {
-        if (err) {
-            res.sendStatus(500)
-        }
-        if (record.rowCount === 1) {
-            res.sendStatus(200)
-        } else {
-            res.sendStatus(404)
-        }
-    })
+    const id = parseInt(req.params.id);
+    if (id) {
+        pool.query('DELETE FROM records WHERE id = $1', [req.params.id], (err, record) => {
+            if (err) {
+                res.sendStatus(500)
+            }
+            if (record.rowCount === 1) {
+                res.sendStatus(200)
+            } else {
+                res.sendStatus(404)
+            }
+        })
+    } else {
+        res.sendStatus(404)
+    }
 }

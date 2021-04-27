@@ -1,7 +1,3 @@
-exports.login = (req, res) => {
-
-}
-
-exports.register = (req, res) => {
+exports.all = (req, res) => {
 
 }
