@@ -1,18 +1,12 @@
 import { pool } from 'services/pool'
 
-const query = `CREATE TABLE public.records
+const query = `CREATE TABLE records
 (
-    id integer NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 2147483647 CACHE 1 ),
-trained boolean DEFAULT false,
-    weight numeric(10,2),
-    date date,
-    CONSTRAINT records_pkey PRIMARY KEY (id)
-)
-
-TABLESPACE pg_default;
-
-ALTER TABLE public.records
-OWNER to postgres;`;
+    id SERIAL PRIMARY KEY,
+    weight NUMERIC(10,2),
+    date DATE,
+    trained BOOLEAN DEFAULT FALSE,
+)`;
 
 pool.query(query, (err, res) => {
     console.log(err, res);

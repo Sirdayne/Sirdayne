@@ -22,15 +22,22 @@ exports.register = (req, res) => {
     })
 }
 
-exports.login = (req, res) => {
-    pool.query('SELECT * from users WHERE email = $1', [req.body.email], (err, user) => {
-        if (err) {
-            res.sendStatus(500)
+exports.login = (request, response) => {
+    pool.query('SELECT * from users WHERE email = $1', [request.body.email], (err, res) => {
+        const user = res.rowCount === 1 ? res.rows[0] : null;
+        if (err || !request.body.password) {
+            response.sendStatus(500)
         }
-        if (user.rowCount === 1) {
-            res.sendStatus(201)
+        if (user) {
+            const validPassword = bcrypt.compareSync(request.body.password, user.password);
+            if (validPassword) {
+                const token = generateAccessToken()
+                response.json({ token })
+            } else {
+                response.sendStatus(401)
+            }
         } else {
-            res.sendStatus(500)
+            response.sendStatus(500)
         }
     })
 }
