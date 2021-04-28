@@ -1,9 +1,15 @@
 # Morning-Records API
 
-Rest API coded in Node/Express
-
-soon will be added DB
+Rest API coded in Node/Express/Postgresql
 
 **to run server**
 
-node index.js
+requires .env file:
+
+SECRET_JWT='SECRET FOR JWT AUTHORIZATION'
+APP_PORT='PORT WHERE APP RUNS'
+DB_USER='POSTGRES USER'
+DB_HOST='POSTGRES HOST'
+DB_DATABASE='NAME OF DATABASE'
+DB_PASS='POSTGRES PASSWORD'
+DB_PORT='DATABASE PORT'
