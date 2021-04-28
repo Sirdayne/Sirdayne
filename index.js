@@ -12,7 +12,9 @@ app.use(cors())
 let router = require('./router')
 router.init(app)
 
-app.listen(3012, () => {
+
+const port = process.env.APP_PORT || 3012;
+app.listen(port, () => {
     console.log('Morning Records API started on port 3012')
 })
 
